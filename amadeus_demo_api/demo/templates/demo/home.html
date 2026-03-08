@@ -1,0 +1,368 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Booking</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'demo/style.css' %}">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <span class="brand-text">Motbhai & Motbhai</span>
+                <span class="brand-accent">Flights</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="home-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="destinations-link">Destinations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="about-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="contact-link">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1>Discover the World with Premium Flights</h1>
+                        <p>Find the best deals on flights to destinations worldwide.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                    <div class="hero-logo">
+                        <img src="{% static 'demo/images/airplane.png' %}" alt="Airplane Globe Logo" class="img-fluid" style="max-width: 300px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-container">
+                <div class="search-header">
+                    <h2>Book From Here!</h2>
+                    <p>Find your ideal flight experience</p>
+                </div>
+
+                {% if messages %}
+                <div class="messages-container">
+                    {% for message in messages %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form action="" method="POST" id="form_id" class="search-form"> 
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" name="Origin" id="inputOrigin" class="form-control" placeholder="From" required>
+                                <label for="inputOrigin"><i class="fas fa-plane-departure"></i> From</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" name="Destination" id="inputDestination" class="form-control" placeholder="To" required>
+                                <label for="inputDestination"><i class="fas fa-plane-arrival"></i> To</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="date" name="Departuredate" id="idDeparturedate" class="form-control" placeholder="Departure Date" required>
+                                <label for="idDeparturedate"><i class="fas fa-calendar"></i> Departure Date</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="date" name="Returndate" id="idReturndate" class="form-control" placeholder="Return Date">
+                                <label for="idReturndate"><i class="fas fa-calendar-check"></i> Return Date</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-search"><i class="fas fa-search"></i> Search Flights</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Destinations -->
+    <section class="featured-section" id="destinations-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Popular Destinations</h2>
+                <p>Explore our top recommended destinations</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="destination-card">
+                        <div class="destination-img" style="background-image: url('https://images.pexels.com/photos/30241282/pexels-photo-30241282/free-photo-of-arc-de-triomphe-in-paris-at-dusk.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');">
+                            <div class="destination-overlay">
+                                <h4>Paris</h4>
+                                <span>France</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="destination-card">
+                        <div class="destination-img" style="background-image: url('https://img.freepik.com/free-photo/cherry-blossoms-spring-chureito-pagoda-fuji-mountain-japan_335224-213.jpg?t=st=1744009203~exp=1744012803~hmac=ea99282e07484eeabda9ee00d39630f0af620e8f1341b28b84d621995f695e72&w=2000');">
+                            <div class="destination-overlay">
+                                <h4>Tokyo</h4>
+                                <span>Japan</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="destination-card">
+                        <div class="destination-img" style="background-image: url('https://cdn.pixabay.com/photo/2016/11/06/17/17/north-america-1803504_1280.jpg');">
+                            <div class="destination-overlay">
+                                <h4>New York</h4>
+                                <span>USA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="about-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <h3>Best Price Guarantee</h3>
+                        <p>Find a lower price? We'll match it and give you an additional discount.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3>24/7 Support</h3>
+                        <p>Our customer service team is available around the clock to assist you.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Secure Booking</h3>
+                        <p>Your payment and personal information are protected by advanced encryption.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Motbhai & Motbhai Flights</h4>
+                    <p>Book premium flights to destinations worldwide with our easy-to-use booking platform.</p>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/meet.pethapara"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/meet__pethapara?igsh=MTRzaTd3N2tnaXpvcg=="><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Destinations</a></li>
+                        <li><a href="#">Deals</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h5>Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Booking Terms</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Info</h5>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> SG-Highway , Ahemdabaad </li>
+                        <li><i class="fas fa-phone"></i> +91 9313512344</li>
+                        <li><i class="fas fa-envelope"></i> mrjeeldetroja@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Motbhai & Motbhai Flights. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            // Airport autocomplete
+            $("#inputOrigin").autocomplete({
+                source: "{% url 'origin_airport_search'%}",
+                minLength: 1,
+                delay: 200,
+                classes: {
+                    "ui-autocomplete": "modern-autocomplete"
+                }
+            });
+
+            $("#inputDestination").autocomplete({
+                source: "{% url 'destination_airport_search'%}",
+                minLength: 1,
+                delay: 200,
+                classes: {
+                    "ui-autocomplete": "modern-autocomplete"
+                }
+            });
+
+            // Form submission with airport code trimming
+            $("#form_id").on("submit", function (e) {
+                e.preventDefault();
+                var self = $(this);
+
+                var originGiven = $("#inputOrigin").val();
+                var destinationGiven = $("#inputDestination").val();
+
+                if (originGiven.length >= 3) {
+                    $("#inputOrigin").val(originGiven.slice(0,3));
+                }
+                if (destinationGiven.length >= 3) {
+                    $("#inputDestination").val(destinationGiven.slice(0,3));
+                }
+
+                $("#form_id").off("submit");
+                self.submit();
+            });
+
+            // Navigation smooth scroll functionality
+            $("#home-link").click(function(e) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $("#home-section").offset().top
+                }, 800);
+                setActiveNavItem(this);
+            });
+
+            $("#destinations-link").click(function(e) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $("#destinations-section").offset().top
+                }, 800);
+                setActiveNavItem(this);
+            });
+
+            $("#about-link").click(function(e) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $("#about-section").offset().top
+                }, 800);
+                setActiveNavItem(this);
+            });
+
+            $("#contact-link").click(function(e) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $("#contact-section").offset().top
+                }, 800);
+                setActiveNavItem(this);
+            });
+
+            // Function to set active navigation item
+            function setActiveNavItem(clickedItem) {
+                // Remove active class from all nav links
+                $(".nav-link").removeClass("active");
+                // Add active class to clicked item
+                $(clickedItem).addClass("active");
+            }
+
+            // Update active menu item based on scroll position
+            $(window).scroll(function() {
+                var scrollPosition = $(window).scrollTop();
+                
+                // Get all section positions
+                var homeOffset = $("#home-section").offset().top;
+                var destinationsOffset = $("#destinations-section").offset().top;
+                var aboutOffset = $("#about-section").offset().top;
+                var contactOffset = $("#contact-section").offset().top;
+                
+                // Add some buffer for better UX
+                var buffer = 100;
+                
+                // Set active class based on scroll position
+                if (scrollPosition >= contactOffset - buffer) {
+                    setActiveNavItem("#contact-link");
+                } else if (scrollPosition >= aboutOffset - buffer) {
+                    setActiveNavItem("#about-link");
+                } else if (scrollPosition >= destinationsOffset - buffer) {
+                    setActiveNavItem("#destinations-link");
+                } else {
+                    setActiveNavItem("#home-link");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

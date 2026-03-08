@@ -1,0 +1,1255 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Booking</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'demo/style.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #ff006e;
+            --accent-color: #8338ec;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        .booking-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .booking-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .booking-step {
+            display: none;
+        }
+        
+        .booking-step.active {
+            display: block;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            font-weight: 500;
+        }
+        
+        .step .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: var(--dark-color);
+            margin-right: 10px;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .step.active .step-number {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .step.completed .step-number {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn-prev, .btn-next {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-prev {
+            background-color: #e9ecef;
+            color: var(--dark-color);
+        }
+        
+        .btn-next {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-prev:hover, .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #ced4da;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(58, 134, 255, 0.25);
+        }
+        
+        .cabin-class-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .cabin-class-option {
+            flex: 1;
+            min-width: 200px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cabin-class-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cabin-class-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(58, 134, 255, 0.05);
+        }
+        
+        .cabin-class-option i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .cabin-class-option h4 {
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+        
+        .cabin-class-option p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .cabin-class-option .price {
+            color: var(--secondary-color);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-top: 15px;
+        }
+        
+        .seating-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            overflow-x: auto;
+            width: 100%;
+        }
+        
+        .airplane-body {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+            position: relative;
+            min-width: 600px;
+        }
+        
+        .airplane-header {
+            width: 100%;
+            height: 80px;
+            background-color: #e9ecef;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .airplane-header:before {
+            content: "COCKPIT";
+            font-weight: bold;
+            color: #6c757d;
+        }
+        
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .seat {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            color: var(--dark-color);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .seat:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .seat.selected {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .seat.unavailable {
+            background-color: #dee2e6;
+            color: #adb5bd;
+            cursor: not-allowed;
+            position: relative;
+        }
+        
+        .seat.unavailable:after {
+            content: "×";
+            position: absolute;
+            font-size: 1.5rem;
+            color: #ff6b6b;
+        }
+        
+        .aisle {
+            width: 20px;
+        }
+        
+        .seat-info {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 20px;
+        }
+        
+        .seat-type {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .seat-type-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        
+        .seat-available {
+            background-color: #e9ecef;
+        }
+        
+        .seat-selected {
+            background-color: var(--accent-color);
+        }
+        
+        .seat-unavailable {
+            background-color: #dee2e6;
+            position: relative;
+        }
+        
+        .seat-unavailable:after {
+            content: "×";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff6b6b;
+            font-size: 1rem;
+        }
+        
+        .ticket {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 30px;
+        }
+        
+        .ticket-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .ticket-header:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background-image: radial-gradient(circle at 10px 10px, #f5f7fa 12px, transparent 12px);
+            background-size: 20px 20px;
+            background-position: -10px -10px;
+        }
+        
+        .ticket-body {
+            padding: 30px;
+            position: relative;
+        }
+        
+        .ticket-body:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background-image: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1), transparent);
+        }
+        
+        .ticket-detail {
+            margin-bottom: 20px;
+        }
+        
+        .ticket-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .ticket-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .flight-info {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .flight-info-segment {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .flight-path {
+            position: relative;
+            height: 2px;
+            background-color: var(--dark-color);
+            margin: 0 10px;
+            flex: 2;
+        }
+        
+        .flight-path:after {
+            content: "✈";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(90deg);
+            font-size: 1.5rem;
+            background-color: white;
+            padding: 0 10px;
+            color: var(--primary-color);
+        }
+        
+        .airport-code {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        .airport-name {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .ticket-footer {
+            padding: 20px 30px;
+            background-color: #f8f9fa;
+            position: relative;
+        }
+        
+        .ticket-footer:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background-image: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1), transparent);
+        }
+        
+        .barcode {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .barcode-line {
+            height: 100%;
+            width: 2px;
+            background-color: var(--dark-color);
+            margin: 0 1px;
+        }
+        
+        .download-ticket {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .download-ticket:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: white;
+        }
+
+        #gender, #nationality {
+            font-size: 0.9rem; 
+            padding: 8px 12px; 
+
+            height: auto; 
+            overflow: visible; 
+        }
+        #gender option, #nationality option {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="booking-container">
+            <h1 class="booking-header">Complete Your Booking</h1>
+            
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active">
+                    <span class="step-number">1</span>
+                    <span>Customer Details</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <span>Select Class</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <span>Choose Seat</span>
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <span>Booking Confirmation</span>
+                </div>
+            </div>
+            
+            <!-- Step 1: Customer Details -->
+            <div class="booking-step active" id="step1">
+                <h3 class="mb-4">Passenger Information</h3>
+                <form id="customer-details-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" class="form-control" id="firstName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" class="form-control" id="dob" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select class="form-control" id="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="nationality">Nationality</label>
+                                <select class="form-control" id="nationality" required>
+                                    <option value="">Select Country</option>
+                                    <option value="in">India</option>
+                                    <option value="us">United States</option>
+                                    <option value="uk">United Kingdom</option>
+                                    <option value="ca">Canada</option>
+                                    <option value="au">Australia</option>
+                                    <!-- Add more countries as needed -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="passport">Passport Number</label>
+                                <input type="text" class="form-control" id="passport" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="passportExpiry">Passport Expiry Date</label>
+                                <input type="date" class="form-control" id="passportExpiry" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="button-container">
+                    <button class="btn btn-prev" disabled>Previous</button>
+                    <button class="btn btn-next" id="step1-next">Next</button>
+                </div>
+            </div>
+        
+            <!-- Step 2: Select Class -->
+            <div class="booking-step" id="step2">
+                <h3 class="mb-4">Select Cabin Class</h3>
+                <div class="cabin-class-container">
+                    <div class="cabin-class-option" data-class="ECONOMY">
+                        <i class="fas fa-chair"></i>
+                        <h4>Economy</h4>
+                        <p>Standard seating with basic amenities</p>
+                        <div class="price">₹{{ price }}</div>
+                    </div>
+                    <div class="cabin-class-option" data-class="PREMIUM_ECONOMY">
+                        <i class="fas fa-chair"></i>
+                        <h4>Premium Economy</h4>
+                        <p>Extra legroom with enhanced services</p>
+                        <div class="price">₹{{ premium_price }}</div>
+                    </div>
+                    <div class="cabin-class-option" data-class="BUSINESS">
+                        <i class="fas fa-couch"></i>
+                        <h4>Business</h4>
+                        <p>Luxurious seating with premium services</p>
+                        <div class="price">₹{{ business_price }}</div>
+                    </div>
+                    <div class="cabin-class-option" data-class="FIRST">
+                        <i class="fas fa-bed"></i>
+                        <h4>First Class</h4>
+                        <p>Ultimate luxury experience and privacy</p>
+                        <div class="price">₹{{ first_price }}</div>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button class="btn btn-prev" id="step2-prev">Previous</button>
+                    <button class="btn btn-next" id="step2-next" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Choose Seat -->
+            <div class="booking-step" id="step3">
+                <h3 class="mb-4">Select Your Seat</h3>
+                <div class="seating-chart">
+                    <div class="airplane-body">
+                        <div class="airplane-header"></div>
+                        <!-- Economy Class -->
+                        <div id="economy-class">
+                            <div class="seat-row">
+                                <div class="seat" data-seat="1A">1A</div>
+                                <div class="seat" data-seat="1B">1B</div>
+                                <div class="seat" data-seat="1C">1C</div>
+                                <div class="aisle"></div>
+                                <div class="seat" data-seat="1D">1D</div>
+                                <div class="seat" data-seat="1E">1E</div>
+                                <div class="seat" data-seat="1F">1F</div>
+                            </div>
+                            <div class="seat-row">
+                                <div class="seat" data-seat="2A">2A</div>
+                                <div class="seat unavailable" data-seat="2B">2B</div>
+                                <div class="seat" data-seat="2C">2C</div>
+                                <div class="aisle"></div>
+                                <div class="seat" data-seat="2D">2D</div>
+                                <div class="seat" data-seat="2E">2E</div>
+                                <div class="seat unavailable" data-seat="2F">2F</div>
+                            </div>
+                            <div class="seat-row">
+                                <div class="seat" data-seat="3A">3A</div>
+                                <div class="seat" data-seat="3B">3B</div>
+                                <div class="seat" data-seat="3C">3C</div>
+                                <div class="aisle"></div>
+                                <div class="seat unavailable" data-seat="3D">3D</div>
+                                <div class="seat" data-seat="3E">3E</div>
+                                <div class="seat" data-seat="3F">3F</div>
+                            </div>
+                            <div class="seat-row">
+                                <div class="seat" data-seat="4A">4A</div>
+                                <div class="seat" data-seat="4B">4B</div>
+                                <div class="seat" data-seat="4C">4C</div>
+                                <div class="aisle"></div>
+                                <div class="seat" data-seat="4D">4D</div>
+                                <div class="seat unavailable" data-seat="4E">4E</div>
+                                <div class="seat" data-seat="4F">4F</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Business Class (initially hidden) -->
+                        <div id="business-class" style="display: none;">
+                            <div class="seat-row">
+                                <div class="seat" data-seat="1A">1A</div>
+                                <div class="seat" data-seat="1B">1B</div>
+                                <div class="aisle"></div>
+                                <div class="seat" data-seat="1C">1C</div>
+                                <div class="seat" data-seat="1D">1D</div>
+                            </div>
+                            <div class="seat-row">
+                                <div class="seat unavailable" data-seat="2A">2A</div>
+                                <div class="seat" data-seat="2B">2B</div>
+                                <div class="aisle"></div>
+                                <div class="seat" data-seat="2C">2C</div>
+                                <div class="seat unavailable" data-seat="2D">2D</div>
+                            </div>
+                            <div class="seat-row">
+                                <div class="seat" data-seat="3A">3A</div>
+                                <div class="seat" data-seat="3B">3B</div>
+                                <div class="aisle"></div>
+                                <div class="seat unavailable" data-seat="3C">3C</div>
+                                <div class="seat" data-seat="3D">3D</div>
+                            </div>
+                        </div>
+                        
+                        <!-- First Class (initially hidden) -->
+                        <div id="first-class" style="display: none;">
+                            <div class="seat-row">
+                                <div class="seat" data-seat="1A">1A</div>
+                                <div class="aisle"></div>
+                                <div class="seat" data-seat="1B">1B</div>
+                            </div>
+                            <div class="seat-row">
+                                <div class="seat unavailable" data-seat="2A">2A</div>
+                                <div class="aisle"></div>
+                                <div class="seat" data-seat="2B">2B</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="seat-info">
+                        <div class="seat-type">
+                            <div class="seat-type-indicator seat-available"></div>
+                            <span>Available</span>
+                        </div>
+                        <div class="seat-type">
+                            <div class="seat-type-indicator seat-selected"></div>
+                            <span>Selected</span>
+                        </div>
+                        <div class="seat-type">
+                            <div class="seat-type-indicator seat-unavailable"></div>
+                            <span>Unavailable</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button class="btn btn-prev" id="step3-prev">Previous</button>
+                    <button class="btn btn-next" id="step3-next" disabled>Next</button>
+                </div>
+            </div>
+            
+            <!-- Step 4: Booking Confirmation -->
+            <div class="booking-step" id="step4">
+                <h3 class="mb-4">Your Booking Confirmation</h3>
+                <div class="ticket">
+                    <div class="ticket-header">
+                        <h3>Boarding Pass</h3>
+                        <p id="booking-reference">Booking Reference: ABC123</p>
+                    </div>
+                    <div class="ticket-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="ticket-detail">
+                                    <div class="ticket-label">Passenger Name</div>
+                                    <div class="ticket-value" id="ticket-passenger-name">John Doe</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="ticket-detail">
+                                    <div class="ticket-label">Flight</div>
+                                    <div class="ticket-value" id="ticket-flight-number">{{ flight.carrier_code }} {{ flight.number }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="ticket-detail">
+                                    <div class="ticket-label">Date</div>
+                                    <div class="ticket-value" id="ticket-date">{{ flight.departure_date }}</div>
+                                </div>
+                            </div>                            
+                            <div class="col-md-4">
+                                <div class="ticket-detail">
+                                    <div class="ticket-label">Class</div>
+                                    <div class="ticket-value" id="ticket-class">{{ selected_class }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="ticket-detail">
+                                    <div class="ticket-label">Seat</div>
+                                    <div class="ticket-value" id="ticket-seat">3A</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flight-info">
+                            <div class="flight-info-segment">
+                                <div class="airport-code" id="departure-code">{{ flight.departure_code }}</div>
+                                <div class="airport-name" id="departure-airport">{{ flight.departure_city }}</div>
+                                <div class="ticket-value" id="departure-time">{{ flight.departure_time }}</div>
+
+                            </div>
+                            <div class="flight-path"></div>
+                            <div class="flight-info-segment">
+                                <div class="airport-code" id="arrival-code">{{ flight.arrival_code }}</div>
+                                <div class="airport-name" id="arrival-airport">{{ flight.arrival_city }}</div>
+                                <div class="ticket-value" id="arrival-time">{{ flight.arrival_time }}</div>
+
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="ticket-detail">
+                                    <div class="ticket-label">Gate</div>
+                                    <div class="ticket-value" id="ticket-gate">{{ gate|default:"G1" }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <!-- <div class="ticket-detail">
+                                    <div class="ticket-label">Boarding Time</div>
+                                    <div class="ticket-value" id="ticket-boarding-time">{{ boarding_time|default:"08:00" }}</div>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ticket-footer">
+                        <div class="barcode">
+                            <!-- Simple barcode visualization -->
+                            <div class="barcode-line" style="height: 40px;"></div>
+                            <div class="barcode-line" style="height: 30px;"></div>
+                            <div class="barcode-line" style="height: 50px;"></div>
+                            <div class="barcode-line" style="height: 25px;"></div>
+                            <div class="barcode-line" style="height: 45px;"></div>
+                            <div class="barcode-line" style="height: 35px;"></div>
+                            <div class="barcode-line" style="height: 50px;"></div>
+                            <div class="barcode-line" style="height: 20px;"></div>
+                            <div class="barcode-line" style="height: 40px;"></div>
+                            <div class="barcode-line" style="height: 30px;"></div>
+                            <div class="barcode-line" style="height: 50px;"></div>
+                            <div class="barcode-line" style="height: 35px;"></div>
+                            <div class="barcode-line" style="height: 45px;"></div>
+                            <div class="barcode-line" style="height: 30px;"></div>
+                            <div class="barcode-line" style="height: 50px;"></div>
+                            <div class="barcode-line" style="height: 25px;"></div>
+                            <div class="barcode-line" style="height: 40px;"></div>
+                            <div class="barcode-line" style="height: 35px;"></div>
+                            <div class="barcode-line" style="height: 30px;"></div>
+                            <div class="barcode-line" style="height: 45px;"></div>
+                        </div>
+                        <p class="text-center mt-3" id="ticket-price">Total Fare: ₹{{ selected_price }}</p>
+                    </div>
+                </div>
+                <!-- <a href="#" class="download-ticket">Download E-Ticket</a> -->
+                <div class="button-container">
+                    <button class="btn btn-prev" id="step4-prev">Previous</button>
+                    <button class="btn btn-success" id="confirm-booking">Confirm Booking</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+    // document.getElementById('confirm-booking').addEventListener('click', function() {
+    //     const data = {
+    //         name: document.getElementById("ticket-passenger-name").textContent,
+    //         email: document.getElementById("email").value,
+    //         phone: document.getElementById("phone").value,
+    //         passport: document.getElementById("passport").value,
+    //         seat: document.getElementById("ticket-seat").textContent,
+    //         class: document.getElementById("ticket-class").textContent,
+    //         arrival_city: document.getElementById("arrival-airport").textContent,
+    //         destination_city: document.getElementById("departure-airport").textContent,
+    //         booking_date: document.getElementById("ticket-date").textContent,
+    //         arrival_time: document.getElementById("arrival-time").textContent,
+    //         destination_time: document.getElementById("departure-time").textContent,
+    //         price: document.getElementById("ticket-price").textContent.replace("Total Fare: ₹", ""),
+    //         flight_number: document.getElementById("ticket-flight-number").textContent
+    //     };
+
+    //     fetch("/save-booking/", {
+    //         method: "POST",
+    //         headers: {
+    //             'Content-Type': 'application/x-www-form-urlencoded',
+    //             'X-CSRFToken': getCookie('csrftoken')  // use a helper to get CSRF token
+    //         },
+    //         body: new URLSearchParams(data)
+    //     }).then(res => res.json()).then(response => {
+    //         alert("Booking saved successfully!");
+    //     });
+    // });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const flightInfo = {
+            number: "{{ flight.carrier_code }} {{ flight.number }}",
+            date: "{{ flight.departure_date }}",
+            departureCode: "{{ flight.departure_code }}",
+            departureCity: "{{ flight.departure_city }}",
+            departureTime: "{{ flight.departure_time }}",
+            arrivalCode: "{{ flight.arrival_code }}",
+            arrivalCity: "{{ flight.arrival_city }}",
+            arrivalTime: "{{ flight.arrival_time }}",
+            gate: "{{ gate|default:'G1' }}",
+            boardingTime: "{{ boarding_time|default:'08:00' }}"
+        };
+    
+        // Step navigation variables
+        const steps = document.querySelectorAll('.booking-step');
+        const stepIndicators = document.querySelectorAll('.step');
+        let currentStep = 0;
+        
+        // Form validation and navigation
+        document.getElementById('step1-next').addEventListener('click', function() {
+            // Validate customer details form
+            const form = document.getElementById('customer-details-form');
+            const inputs = form.querySelectorAll('input, select');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (input.hasAttribute('required') && !input.value) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            if (isValid) {
+                goToStep(1);
+            } else {
+                alert('Please fill all required fields');
+            }
+        });
+        
+        // Cabin class selection
+        const cabinOptions = document.querySelectorAll('.cabin-class-option');
+        let selectedCabinClass = '';
+        
+        cabinOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                cabinOptions.forEach(opt => opt.classList.remove('selected'));
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                // Store selected class
+                selectedCabinClass = this.getAttribute('data-class');
+                // Enable next button
+                document.getElementById('step2-next').disabled = false;
+            });
+        });
+        
+        // Step 2 Next button (Select Cabin Class)
+        document.getElementById('step2-next').addEventListener('click', function() {
+            const selectedOption = document.querySelector('.cabin-class-option.selected');
+            if (selectedOption) {
+                selectedCabinClass = selectedOption.getAttribute('data-class');
+                updateSeatingChart(selectedCabinClass);
+                goToStep(2);
+            } else {
+                alert('Please select a cabin class');
+            }
+        });
+        
+        // Step 2 Previous button
+        document.getElementById('step2-prev').addEventListener('click', function() {
+            goToStep(0);
+        });
+        
+        // Seat selection
+        let selectedSeat = '';
+        
+        function updateSeatingChart(cabinClass) {
+            // Hide all seating layouts
+            document.getElementById('economy-class').style.display = 'none';
+            document.getElementById('business-class').style.display = 'none';
+            document.getElementById('first-class').style.display = 'none';
+            
+            // Show appropriate seating layout based on class
+            if (cabinClass === 'ECONOMY' || cabinClass === 'PREMIUM_ECONOMY') {
+                document.getElementById('economy-class').style.display = 'block';
+            } else if (cabinClass === 'BUSINESS') {
+                document.getElementById('business-class').style.display = 'block';
+            } else if (cabinClass === 'FIRST') {
+                document.getElementById('first-class').style.display = 'block';
+            }
+        }
+        
+        // Add event listeners to all seats
+        const seats = document.querySelectorAll('.seat:not(.unavailable)');
+        seats.forEach(seat => {
+            seat.addEventListener('click', function() {
+                // Remove selected class from all seats
+                seats.forEach(s => s.classList.remove('selected'));
+                // Add selected class to clicked seat
+                this.classList.add('selected');
+                // Store selected seat
+                selectedSeat = this.getAttribute('data-seat');
+                console.log('Selected seat:', selectedSeat);
+                
+                // Enable all possible Next buttons using multiple selectors
+                // 1. By ID
+                const nextBtn = document.getElementById('step3-next');
+                if (nextBtn) {
+                    nextBtn.disabled = false;
+                    console.log('Next button enabled by ID');
+                }
+                
+                // 2. By class within step3
+                document.querySelectorAll('.btn-next').forEach(btn => {
+                    if (btn.closest('#step3')) {
+                        btn.disabled = false;
+                        console.log('Next button enabled by class in step3');
+                    }
+                });
+                
+                // 3. By the Next text content
+                document.querySelectorAll('button').forEach(btn => {
+                    if (btn.textContent.trim() === 'Next') {
+                        btn.disabled = false;
+                        console.log('Next button enabled by text content');
+                    }
+                });
+            });
+        });
+        
+        // Handle Step 3 Next button click - attach to multiple possible selectors
+        // 1. By ID
+        const step3NextBtn = document.getElementById('step3-next');
+        if (step3NextBtn) {
+            step3NextBtn.addEventListener('click', function() {
+                if (selectedSeat) {
+                    updateTicketInfoWithGate();
+                    goToStep(3);
+                } else {
+                    alert('Please select a seat');
+                }
+            });
+        }
+        
+        // 2. By class and closest container
+        document.querySelectorAll('.btn-next').forEach(btn => {
+            if (btn.closest('#step3')) {
+                btn.addEventListener('click', function() {
+                    if (selectedSeat) {
+                        updateTicketInfoWithGate();
+                        goToStep(3);
+                    } else {
+                        alert('Please select a seat');
+                    }
+                });
+            }
+        });
+        
+        // 3. By text content - looking for Next button on seat selection page
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.textContent.trim() === 'Next') {
+                btn.addEventListener('click', function() {
+                    // Check if we're on step 3 (seat selection)
+                    if (currentStep === 2 && selectedSeat) {
+                        updateTicketInfoWithGate();
+                        goToStep(3);
+                    } else if (currentStep === 2) {
+                        alert('Please select a seat');
+                    }
+                });
+            }
+        });
+        
+        // Step 3 Previous button
+        document.getElementById('step3-prev').addEventListener('click', function() {
+            goToStep(1);
+        });
+        
+        // Step 4 Previous button
+        document.getElementById('step4-prev').addEventListener('click', function() {
+            goToStep(2);
+        });
+        
+        // Check if we're at step 4 (confirmation) and update ticket if needed
+        if (document.querySelector('.booking-step:nth-child(4)').classList.contains('active')) {
+            updateTicketInfoWithGate();
+        }
+        
+        // Update ticket information
+        function updateTicketInfo() {
+            // Get passenger info from form
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const fullName = `${firstName} ${lastName}`;
+    
+            // Generate random reference number
+            const reference = generateReference();
+    
+            // Update ticket with passenger and selection details
+            document.getElementById('ticket-passenger-name').textContent = fullName;
+            document.getElementById('ticket-class').textContent = getClassDisplayName(selectedCabinClass);
+            document.getElementById('ticket-seat').textContent = selectedSeat;
+            document.getElementById('booking-reference').textContent = `Booking Reference: ${reference}`;
+            document.getElementById('ticket-price').textContent = `Total Fare: ${getCabinPrice(selectedCabinClass)}`;
+    
+            // Inject flight data from flightInfo
+            document.getElementById("ticket-flight-number").textContent = flightInfo.number;
+            document.getElementById("ticket-date").textContent = flightInfo.date;
+    
+            document.getElementById("departure-code").textContent = flightInfo.departureCode;
+            document.getElementById("departure-airport").textContent = flightInfo.departureCity;
+            document.getElementById("departure-time").textContent = flightInfo.departureTime;
+    
+            document.getElementById("arrival-code").textContent = flightInfo.arrivalCode;
+            document.getElementById("arrival-airport").textContent = flightInfo.arrivalCity;
+            document.getElementById("arrival-time").textContent = flightInfo.arrivalTime;
+    
+            document.getElementById("ticket-gate").textContent = flightInfo.gate;
+            
+            // Check if boarding time element exists before updating
+            const boardingTimeElement = document.getElementById("ticket-boarding-time");
+            if (boardingTimeElement) {
+                boardingTimeElement.textContent = flightInfo.boardingTime;
+            }
+        }
+        
+        // Calculate boarding time (30 minutes before departure)
+        function calculateBoardingTime(departureTime) {
+            const [hours, minutes] = departureTime.split(':').map(Number);
+            let boardingHours = hours;
+            let boardingMinutes = minutes - 30;
+            
+            if (boardingMinutes < 0) {
+                boardingMinutes += 60;
+                boardingHours -= 1;
+                if (boardingHours < 0) {
+                    boardingHours += 24;
+                }
+            }
+            
+            return `${boardingHours.toString().padStart(2, '0')}:${boardingMinutes.toString().padStart(2, '0')}`;
+        }
+        
+        // Generate random gate number
+        function generateGateNumber() {
+            const letters = 'ABCDEFG';
+            const letter = letters.charAt(Math.floor(Math.random() * letters.length));
+            const number = Math.floor(Math.random() * 20) + 1;
+            return `${letter}${number}`;
+        }
+        
+        // Updated function that includes generating a random gate
+        function updateTicketInfoWithGate() {
+            updateTicketInfo();
+            // Generate and set random gate if it's not already provided by backend
+            const gateElement = document.getElementById('ticket-gate');
+            if (gateElement && gateElement.textContent === 'G1') {  // Default value
+                gateElement.textContent = generateGateNumber();
+            }
+        }
+        
+        function getClassDisplayName(cabinClass) {
+            switch(cabinClass) {
+                case 'ECONOMY': return 'Economy';
+                case 'PREMIUM_ECONOMY': return 'Premium Economy';
+                case 'BUSINESS': return 'Business';
+                case 'FIRST': return 'First Class';
+                default: return cabinClass;
+            }
+        }
+        
+        const cabinPrices = {
+            'ECONOMY': '{{ economy_price|default:"6891.0" }}',
+            'PREMIUM_ECONOMY': '{{ premium_price|default:"7580.1" }}',
+            'BUSINESS': '{{ business_price|default:"8475.93" }}',
+            'FIRST': '{{ first_price|default:"9302.85" }}'
+        };
+    
+        function getCabinPrice(cabinClass) {
+            return `₹${cabinPrices[cabinClass] || '0'}`;
+        }
+    
+        function generateReference() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        // Final booking confirmation
+        const confirmButton = document.getElementById('confirm-booking');
+        if (confirmButton) {
+            confirmButton.addEventListener('click', function() {
+                // Here you would typically send the booking data to the server
+                alert('Your booking has been confirmed! Thank you for flying with us.');
+            });
+        }
+        
+        // Download e-ticket (placeholder functionality)
+        const downloadButtons = document.querySelectorAll('.download-ticket');
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Your E-Ticket has been sent to your email address.');
+            });
+        });
+        
+        // Navigation helper function
+        function goToStep(stepIndex) {
+            // Hide all steps
+            steps.forEach(step => step.classList.remove('active'));
+            
+            // Show current step
+            steps[stepIndex].classList.add('active');
+            
+            // Update step indicators
+            stepIndicators.forEach((indicator, index) => {
+                if (index < stepIndex) {
+                    indicator.classList.add('completed');
+                    indicator.classList.remove('active');
+                } else if (index === stepIndex) {
+                    indicator.classList.add('active');
+                    indicator.classList.remove('completed');
+                } else {
+                    indicator.classList.remove('active');
+                    indicator.classList.remove('completed');
+                }
+            });
+            
+            // Update current step
+            currentStep = stepIndex;
+            console.log('Current step:', currentStep);
+        }
+        
+        // Add debugging statements to help troubleshoot
+        console.log('DOM loaded and script initialized');
+        console.log('Step indicators:', stepIndicators.length);
+        console.log('Booking steps:', steps.length);
+        console.log('Next button in step3:', document.getElementById('step3-next'));
+        console.log('Seats found:', seats.length);
+    });
+    </script>
+
+
+    <!-- <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const confirmBtn = document.getElementById("confirm-booking");
+        const downloadBtn = document.querySelector(".download-ticket");
+    
+        confirmBtn.addEventListener("click", function () {
+            const name = document.getElementById("ticket-passenger-name").textContent;
+            const flight = document.getElementById("ticket-flight-number").textContent;
+            const date = document.getElementById("ticket-date").textContent;
+            const seat = document.getElementById("ticket-seat").textContent;
+            const gate = document.getElementById("ticket-gate").textContent;
+            const boardingTime = document.getElementById("ticket-boarding-time").textContent;
+    
+            const ticketContent = `
+    Ticket Confirmation
+    ----------------------
+    Passenger: ${name}
+    Flight: ${flight}
+    Date: ${date}
+    Seat: ${seat}
+    Gate: ${gate}
+    Boarding Time: ${boardingTime}
+            `;
+    
+            const blob = new Blob([ticketContent], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            downloadBtn.href = url;
+            downloadBtn.download = "ticket.txt";
+        });
+        });
+    </script> -->
+</body>
+</html>
+    
